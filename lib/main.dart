@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:create_atom/create_atom.dart';
 
+import 'CommandSection.dart';
 import 'LogSection.dart';
 
 void main() => runApp(MyApp());
@@ -41,6 +42,35 @@ class _Loader extends StatelessWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  Future<void> _showExitDialog(context) async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Exit Main Console ?'),
+          actions: <Widget>[
+            FlatButton(
+              color: Colors.grey[900],
+              child: Text('Yes'),
+              onPressed: () {
+                //SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+                // Currently this doesn't work with windows so using exit(0)
+                Process.killPid(COpsProcess.pid);
+                exit(0);
+              },
+            ),
+            FlatButton(
+              color: Colors.grey[900],
+              child: Text('No'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,15 +80,18 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text("Main Control"),
         actions: [
           IconButton(
+            tooltip: "Settings",
+            hoverColor: Colors.blue,
+            splashRadius: 20.0,
+            icon: Icon(Icons.settings),
+            onPressed: () {},
+          ),
+          IconButton(
             tooltip: "Exit",
             hoverColor: Colors.red,
             splashRadius: 20.0,
             icon: Icon(Icons.close),
-            onPressed: () {
-              //SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-              // Currently this doesn't work with windows so using exit(0)
-              exit(0);
-            },
+            onPressed: () => _showExitDialog(context),
           ),
         ],
       ),
@@ -68,9 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
             flex: 3,
             child: Container(
               color: Colors.black,
-              child: Center(
-                child: const _Loader(),
-              ),
+              child: Center(child: CommandView()),
             ),
           ),
           Expanded(
@@ -96,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Colors.black,
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 1.0, horizontal: 1.0),
-                child: LogView(),
+                child: Center(child: LogView()),
               ),
             ),
           ),

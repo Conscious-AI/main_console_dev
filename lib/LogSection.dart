@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+import 'TerminalView.dart';
+
 class LogView extends StatefulWidget {
   // ignore: close_sinks
-  final StreamController _streamController = StreamController<List>();
-  final ScrollController _scrollController = ScrollController();
+  final StreamController _streamController = StreamController<List>.broadcast();
   final IO.Socket _socket = IO.io('http://localhost:6969', <String, dynamic>{
     'transports': ['websocket']
   });
@@ -17,15 +18,35 @@ class LogView extends StatefulWidget {
 }
 
 class _LogViewState extends State<LogView> {
-  void _scrollToBottom() => widget._scrollController.jumpTo(widget._scrollController.position.maxScrollExtent);
+  Widget child;
+
+  Widget placeholder() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CircularProgressIndicator(),
+        SizedBox(height: 20.0),
+        Text("Attempting to connect to local server..."),
+      ],
+    );
+  }
+
+  Widget loggingView() {
+    return TerminalView(
+      streamController: widget._streamController,
+      placeholderText: "Waiting for response from server...",
+    );
+  }
 
   void _getdata() {
     widget._socket.on('connect', (_) {
-      print('Connected to logging server.');
+      print('Connected to local server.');
+      setState(() => child = loggingView());
     });
 
     widget._socket.on('disconnect', (_) {
-      print('Disconnected from logging server.');
+      print('Disconnected from local server.');
+      setState(() => child = placeholder());
     });
 
     widget._socket.on('message', (data) {
@@ -35,28 +56,17 @@ class _LogViewState extends State<LogView> {
 
   @override
   void initState() {
+    child = placeholder();
     _getdata();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: widget._streamController.stream,
-      builder: (context, snapshot) {
-        if (snapshot.data == null) {
-          return CircularProgressIndicator();
-        }
-        // Scroll to Bottom
-        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
-        return ListView.builder(
-          controller: widget._scrollController,
-          itemCount: snapshot.data.length,
-          itemBuilder: (c, i) {
-            return Text(snapshot.data[i].trim());
-          },
-        );
-      },
+    return AnimatedSwitcher(
+      duration: Duration(seconds: 1),
+      transitionBuilder: (child, animation) => FadeTransition(opacity: animation, child: child),
+      child: child,
     );
   }
 }
