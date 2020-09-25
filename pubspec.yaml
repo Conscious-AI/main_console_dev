@@ -25,6 +25,11 @@ dependencies:
     sdk: flutter
   create_atom: ^2.0.0
   socket_io_client: ^0.9.11
+  
+  # window_size:
+  #   git:
+  #     url: git://github.com/google/flutter-desktop-embedding.git
+  #     path: plugins/window_size
 
 
   # The following adds the Cupertino Icons font to your application.

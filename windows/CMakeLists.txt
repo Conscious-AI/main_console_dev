@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
-project(main_console LANGUAGES CXX)
+project(main_console_dev LANGUAGES CXX)
 
-set(BINARY_NAME "main_console")
+set(BINARY_NAME "main_console_dev")
 
 cmake_policy(SET CMP0063 NEW)
 
