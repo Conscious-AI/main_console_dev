@@ -10,6 +10,7 @@ import 'TerminalView.dart';
 class CommandView extends StatefulWidget {
   // ignore: close_sinks
   final StreamController _streamController = StreamController<List>.broadcast();
+  
   @override
   _CommandViewState createState() => _CommandViewState();
 }
@@ -82,6 +83,7 @@ class _CommandViewState extends State<CommandView> {
       COpsProcess.proc = process;
       COpsProcess.pid = process.pid;
       process.stdout.transform(utf8.decoder).listen((data) => handleStdOut(data));
+      process.stderr.transform(utf8.decoder).listen((data) => print(data));
       setState(() => child = cOpsView());
     });
   }

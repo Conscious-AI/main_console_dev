@@ -21,13 +21,16 @@ class _LogViewState extends State<LogView> {
   Widget child;
 
   Widget placeholder() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CircularProgressIndicator(),
-        SizedBox(height: 20.0),
-        Text("Attempting to connect to local server..."),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(),
+          SizedBox(height: 20),
+          Text("Attempting to connect to local server..."),
+        ],
+      ),
     );
   }
 

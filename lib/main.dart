@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:create_atom/create_atom.dart';
 
+import 'SplitWidget.dart';
 import 'CommandSection.dart';
 import 'LogSection.dart';
 
@@ -54,9 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Colors.grey[900],
               child: Text('Yes'),
               onPressed: () {
-                //SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-                // Currently this doesn't work with windows so using exit(0)
                 Process.killPid(COpsProcess.pid);
+                // Temporary workaround for closing the release app
+                debugger();
                 exit(0);
               },
             ),
@@ -95,43 +97,32 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            flex: 3,
-            child: Container(
-              color: Colors.black,
-              child: Center(child: CommandView()),
+      body: Split(
+        axis: Axis.vertical,
+        initialFirstFraction: 0.4,
+        dragIndicatorColor: Colors.white,
+        firstChild: Container(
+          alignment: Alignment.center,
+          color: Colors.black,
+          child: CommandView(),
+        ),
+        secondChild: Split(
+          axis: Axis.vertical,
+          dragIndicatorColor: Colors.white,
+          firstChild: Container(
+            alignment: Alignment.center,
+            color: Colors.black,
+            child: SingleChildScrollView(child: const _Loader()),
+          ),
+          secondChild: Container(
+            alignment: Alignment.center,
+            color: Colors.black,
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 1.0, horizontal: 1.0),
+              child: LogView(),
             ),
           ),
-          Expanded(
-            flex: 2,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black,
-                border: Border.symmetric(
-                  vertical: BorderSide(
-                    color: Colors.white,
-                    width: 1.0,
-                  ),
-                ),
-              ),
-              child: Center(
-                child: const _Loader(),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Container(
-              color: Colors.black,
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 1.0, horizontal: 1.0),
-                child: Center(child: LogView()),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
