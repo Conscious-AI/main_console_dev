@@ -10,7 +10,7 @@ import 'TerminalView.dart';
 class CommandView extends StatefulWidget {
   // ignore: close_sinks
   final StreamController _streamController = StreamController<List>.broadcast();
-  
+
   @override
   _CommandViewState createState() => _CommandViewState();
 }
@@ -44,6 +44,7 @@ class _CommandViewState extends State<CommandView> {
           titleTextStyle: TextStyle(),
           content: TextField(
             controller: tec,
+            autofocus: true,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
               hintText: 'Enter your response',
@@ -65,13 +66,34 @@ class _CommandViewState extends State<CommandView> {
     );
   }
 
+  void handleStdInTime(String data) {
+    Future<TimeOfDay> selectedTime = showTimePicker(
+      context: ctx,
+      initialTime: TimeOfDay.now(),
+      helpText: data,
+    );
+
+    selectedTime.then((value) {
+      if (value != null) {
+        String time = "${value.hour}:${value.minute}";
+        COpsProcess.proc.stdin.writeln(time);
+      } else {
+        COpsProcess.proc.stdin.writeln();
+      }
+    });
+  }
+
   void handleStdOut(String data) {
     if (data.contains("CAI: COPS: STDIN")) {
-      handleStdIn(data.substring(17));
-    } else {
-      dataList.add(data.trim());
-      widget._streamController.add(dataList);
+      if (data.contains("CAI: COPS: STDIN: TIME")) {
+        handleStdInTime(data.substring(24));
+        return;
+      }
+      handleStdIn(data.substring(18));
+      return;
     }
+    dataList.add(data.trim());
+    widget._streamController.add(dataList);
   }
 
   void runCommandOps() {
