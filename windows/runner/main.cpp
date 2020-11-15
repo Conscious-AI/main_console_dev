@@ -8,6 +8,10 @@
 
 int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
                       _In_ wchar_t *command_line, _In_ int show_command) {
+  // Get & Set window WorkArea size
+  RECT workArea;
+  SystemParametersInfoA(SPI_GETWORKAREA, 0, &workArea, 0);
+
   // Attach to console when present (e.g., 'flutter run') or create a
   // new console when running with a debugger.
   if (!::AttachConsole(ATTACH_PARENT_PROCESS) && ::IsDebuggerPresent()) {
@@ -28,8 +32,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   project.set_dart_entrypoint_arguments(std::move(command_line_arguments));
 
   FlutterWindow window(&run_loop, project);
-  Win32Window::Point origin(10, 10);
-  Win32Window::Size size(1280, 720);
+  // Aligning window at far right
+  Win32Window::Point origin(workArea.right - (workArea.right / 6), 0);
+  // Adjusting to right size
+  Win32Window::Size size(workArea.right / 6, workArea.bottom);
   if (!window.CreateAndShow(L"main_console_dev", origin, size)) {
     return EXIT_FAILURE;
   }
