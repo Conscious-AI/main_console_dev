@@ -21,16 +21,14 @@ class _LogViewState extends State<LogView> {
   Widget child;
 
   Widget placeholder() {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(),
-          SizedBox(height: 20),
-          Text("Attempting to connect to local server..."),
-        ],
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CircularProgressIndicator(),
+        SizedBox(height: 20),
+        Text("Attempting to connect to local server..."),
+      ],
     );
   }
 
@@ -69,7 +67,7 @@ class _LogViewState extends State<LogView> {
     return AnimatedSwitcher(
       duration: Duration(seconds: 1),
       transitionBuilder: (child, animation) => FadeTransition(opacity: animation, child: child),
-      child: child,
+      child: SingleChildScrollView(child: child),
     );
   }
 }

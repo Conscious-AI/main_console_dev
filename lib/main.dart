@@ -57,10 +57,13 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Colors.grey[900],
               child: Text('Yes'),
               onPressed: () {
-                Process.killPid(COpsProcess.pid);
-                // Temporary workaround for closing the release app
-                debugger();
-                exit(0);
+                try {
+                  Process.killPid(COpsProcess.pid);
+                } finally {
+                  // Temporary workaround for closing the release app
+                  debugger();
+                  exit(0);
+                }
               },
             ),
             FlatButton(
